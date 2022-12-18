@@ -1,0 +1,38 @@
+{#
+{% for key, message in entry.validationResults %}
+	<div>
+        <b style="color:#D61F2B;">{{ key }}</b>:<br> {{ message|join(', ') }}
+    </div>
+    {% else %}
+
+{% endfor %} #}
+
+{% if entry.validationResults.hasErrors %}
+    <div class="pa-errors">
+        {% for siteErrors in entry.validationResults.errors %}
+            <div class="pa-site">
+                <div class="pa-sitename">
+                    Site: {{ siteErrors.siteName }}
+                </div>
+
+                <div>
+                    {% for key, errors in siteErrors.errors %}
+                        <div class="pa-key">
+                            {{ key }}
+                        </div>
+                        <div>
+                            {% for error in errors %}
+                                <div>
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% else %}
+    <b class="pa-success">OK</b>
+{% endif %}

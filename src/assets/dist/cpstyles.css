@@ -1,0 +1,37 @@
+#pa-notice, #pa-error {
+    margin-top: 24px;
+    padding: 12px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-style: solid;
+}
+
+#pa-notice {
+    border-color: #065f46;
+    background-color: #d1fae5;
+    color: #065f46;
+
+}
+
+#pa-error {
+    border-color: #991b1b;
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.pa-success {
+    color:green;
+}
+
+.pa-errors .pa-site {
+    margin-bottom: 12px;
+}
+
+.pa-errors .pa-sitename {
+    font-weight: bold;
+}
+
+.pa-errors .pa-key {
+    font-weight: bold;
+    color: var(--red-800)
+}

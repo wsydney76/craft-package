@@ -1,0 +1,10 @@
+{% set releaseStatusText = {
+    unreleased: 'Unreleased'|t('package'),
+    provisionalDraft: 'Provisional Draft'|t('package'),
+    regularDraft: 'Regular Draft'|t('package'),
+    released: 'Released'|t('package'),
+} %}
+
+{{ releaseStatusText[entry.releaseStatus] }}
+<br>
+{{ entry.status }}

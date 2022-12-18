@@ -1,0 +1,7 @@
+{% if entry.isDraft %}
+    {{ entry.dateCreated|datetime('short') }}<br>
+    {{ entry.creator.name }}
+    
+    <br>
+    {{ entry.draftNotes }}
+{% endif %}

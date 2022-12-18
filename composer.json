@@ -1,0 +1,40 @@
+{
+    "name": "wsydney76/craft-package",
+    "description": "Publish packages",
+    "type": "craft-plugin",
+    "license": "mit",
+    "support": {
+        "email": "wsydney@web.de",
+        "issues": "https://github.com/wsydney76/craft-package/issues?state=open",
+        "source": "https://github.com/wsydney76/craft-package",
+        "docs": "https://github.com/wsydney76/craft-package",
+        "rss": "https://github.com/wsydney76/craft-package/releases.atom"
+    },
+    "require": {
+        "php": ">=8.0.2",
+        "craftcms/cms": "^4.3.5",
+        "wsydney76/craft-contentoverview": "^5.1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "wsydney76\\package\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "package",
+        "name": "Package",
+        "developer": "wsydney76",
+        "documentationUrl": "https://github.com/wsydney76/craft-package"
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.0.2"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    }
+}
+
