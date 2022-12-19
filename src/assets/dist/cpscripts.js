@@ -8,25 +8,11 @@ function pa_release(id) {
         (input) => options[input.id] = input.checked
     )
 
-    Craft.sendActionRequest("POST", 'package/package/release',
-            {
-                data: {
-                    packageId: id,
-                    options: options
-                }
-            })
-        .then((response) => {
-            Craft.cp.displayNotice(response.data.message, response.data.notificationSettings)
+    pa_sendActionRequest('package/package/release', {
+        packageId: packageId,
+        options: options
+    })
 
-            pa_message('pa-notice', response.data.notice)
-            pa_message('pa-error', response.data.error)
-
-            co_getSectionHtml('package-0-0-0');
-
-        })
-        .catch((error) => {
-            Craft.cp.displayError(error.response.data.message)
-        })
 }
 
 function pa_attachNewDrafts(packageId) {
@@ -41,26 +27,12 @@ function pa_attachNewDrafts(packageId) {
         (input) => options[input.id] = input.checked
     )
 
-    Craft.sendActionRequest("POST", 'package/package/attach-new-drafts',
-            {
-                data: {
-                    packageId: packageId,
-                    ids: ids,
-                    options: options
-                }
-            })
-        .then((response) => {
-            Craft.cp.displayNotice(response.data.message, response.data.notificationSettings)
+    pa_sendActionRequest('package/package/attach-new-drafts', {
+        packageId: packageId,
+        ids: ids,
+        options: options
+    })
 
-            pa_message('pa-notice', response.data.notice)
-            pa_message('pa-error', response.data.error)
-
-            co_getSectionHtml('package-0-0-0');
-
-        })
-        .catch((error) => {
-            Craft.cp.displayError(error.response.data.message)
-        })
 }
 
 function pa_attachNewEntry(packageId) {

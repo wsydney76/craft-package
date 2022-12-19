@@ -79,8 +79,8 @@ class PackageSection extends TableSection
 
     public function getQuery(array $params): ElementQueryInterface
     {
-        if (isset($params['queryParams']['packageId'])) {
-            $this->packageId = $params['queryParams']['packageId'];
+        if (isset($params['queryParams']['elementId'])) {
+            $this->packageId = $params['queryParams']['elementId'];
         }
 
         return Plugin::getInstance()->packageService->getQuery($this->packageId, $this->section);
