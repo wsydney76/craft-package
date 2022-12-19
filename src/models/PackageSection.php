@@ -10,6 +10,7 @@ use wsydney76\contentoverview\models\TableSection;
 use wsydney76\contentoverview\Plugin as ContentoverviewPlugin;
 use wsydney76\package\Plugin;
 use yii\web\NotFoundHttpException;
+use function collect;
 
 class PackageSection extends TableSection
 {
@@ -19,7 +20,7 @@ class PackageSection extends TableSection
     public bool $showRefreshButton = true;
     public array|string $imageField = 'featuredImage';
 
-    public ?int $elementId;
+    public ?int $packageId;
     public Entry $entry;
 
     public function init(): void
@@ -27,7 +28,7 @@ class PackageSection extends TableSection
 
         $co = ContentoverviewPlugin::getInstance()->contentoverview;
 
-        $this->elementId = Craft::$app->request->getQueryParam('elementId');
+        $this->packageId = Craft::$app->request->getQueryParam('elementId');
 
         $this->imageField = Plugin::getInstance()->getSettings()->imageField;
 
@@ -53,8 +54,8 @@ class PackageSection extends TableSection
             'view'
         ];
 
-        if ($this->elementId) {
-            $this->entry = Craft::$app->entries->getEntryById($this->elementId);
+        if ($this->packageId) {
+            $this->entry = Craft::$app->entries->getEntryById($this->packageId);
             if (!$this->entry) {
                 throw new NotFoundHttpException();
             }
@@ -78,11 +79,11 @@ class PackageSection extends TableSection
 
     public function getQuery(array $params): ElementQueryInterface
     {
-        if (isset($params['queryParams']['elementId'])) {
-            $this->elementId = $params['queryParams']['elementId'];
+        if (isset($params['queryParams']['packageId'])) {
+            $this->packageId = $params['queryParams']['packageId'];
         }
 
-        return Plugin::getInstance()->packageService->getQuery($this->elementId, $this->section);
+        return Plugin::getInstance()->packageService->getQuery($this->packageId, $this->section);
     }
 
     public function getSources(): string|array
@@ -95,5 +96,25 @@ class PackageSection extends TableSection
         )->toArray();
 
     }
+
+    public function getSectionOptions(): array
+    {
+        if (!$this->section) {
+            return collect(Craft::$app->sections->getAllSections())
+                ->map(fn ($section) => [
+                    'label' => $section->name,
+                    'value' => $section->handle
+                ])->toArray();
+        }
+
+        $sections = collect($this->_normalizeToArray($this->section));
+        return $sections
+            ->map(fn ($section) => [
+                'label' => Craft::$app->sections->getSectionByHandle($section),
+                'value' => $section
+            ])->toArray();
+
+    }
+
 
 }

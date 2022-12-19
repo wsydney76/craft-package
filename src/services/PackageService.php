@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use ModifyQueryEvent;
 use wsydney76\package\Plugin;
 use yii\base\Component;
+use yii\base\InvalidConfigException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -48,6 +49,7 @@ class PackageService extends Component
 
     public function checkAllValid(Collection $entries)
     {
+        // TODO: Cache results for releaseEntry method
         $currentUser = Craft::$app->user->identity;
         foreach ($entries as $entry) {
             if (!$currentUser->can("saveentries:$entry->section->uid")) {
@@ -165,17 +167,27 @@ class PackageService extends Component
             throw new NotFoundHttpException("Entry with $packageId not found.");
         }
 
-        if (!$options['ignoreExistingDrafts']) {
+        $currentUser = Craft::$app->user->identity;
+
+        $provisionalDrafts = Entry::find()->draftOf($entry)->provisionalDrafts(true)->status(null)->collect();
+
+        if ($options['ignoreExistingDrafts']) {
+            // Never create a second provisional draft for a user
+            foreach ($provisionalDrafts as $provisionalDraft) {
+                if ($provisionalDraft->creatorId === $currentUser->id) {
+                    return [false, "Your have already a provisional draft for $entry->title"];
+                }
+            }
+        } else {
             if (Entry::find()->draftOf($entry)->status(null)->exists()) {
                 return [false, "There is already a draft for $entry->title"];
             }
 
-            if (Entry::find()->draftOf($entry)->provisionalDrafts(true)->status(null)->exists()) {
+            if ($provisionalDrafts->count()) {
                 return [false, "There is already a provisional draft for $entry->title"];
             }
         }
 
-        $currentUser = Craft::$app->user->identity;
         if (!$entry->canCreateDrafts($currentUser)) {
             return [false, "No permission for $entry->title"];
         }
@@ -195,11 +207,44 @@ class PackageService extends Component
         $draft->setFieldValue(Plugin::getInstance()->getSettings()->relationFieldHandle, [$packageId]);
         $draft->scenario = Entry::SCENARIO_ESSENTIALS;
 
-        if (!Craft::$app->elements->saveElement($draft)) {
+        if (!Craft::$app->elements->saveElement($draft, updateSearchIndex: false)) {
             return [false, "Could not resave new draft for $entry->title"];
         }
 
         return [true, "New draft for '$entry' created and attached to package."];
+    }
+
+    public function createEntry(int $packageId, array $options): array
+    {
+        $currentUser = Craft::$app->user->identity;
+        $section = Craft::$app->sections->getSectionByHandle($options['section']);
+        if (!$section) {
+            throw new InvalidConfigException();
+        }
+
+        if (!$currentUser->can("saveentries:$section->uid")) {
+            return [false, "Invalid permission for $section->name"];
+        }
+
+        $packageEntry = Craft::$app->entries->getEntryById($packageId);
+        if (!$packageEntry) {
+            throw new NotFoundHttpException("Entry with $packageId not found.");
+        }
+
+        $entry = new Entry();
+        $entry->sectionId = $section->id;
+        $entry->authorId = $currentUser->id;
+        $entry->title = $options['title'];
+        $entry->setFieldValue(Plugin::getInstance()->getSettings()->relationFieldHandle, [$packageId]);
+
+        if (!Craft::$app->drafts->saveElementAsDraft(
+            $entry,
+            $currentUser->id,
+        )) {
+            return [false, "Could not save draft"];
+        }
+
+        return [true, $options['title'] . " created"];
     }
 
 

@@ -84,7 +84,35 @@ class PackageController extends Controller
                 'details' => '<button class="btn" onclick="window.location.reload()">Refresh</button>'
             ]
         );
+    }
 
+    public function actionAttachNewEntry()
+    {
+        $packageId = Craft::$app->request->getRequiredBodyParam('packageId');
+        $options = Craft::$app->request->getRequiredBodyParam('options');
+
+        // return $this->asFailure("Something went wrong.");
+
+        if (!$options['title']) {
+            return $this->asFailure("Title is empty.");
+        }
+
+        [$success, $message] = Plugin::getInstance()->packageService->createEntry($packageId, $options);
+        if (!$success) {
+            return $this->asFailure($message);
+        }
+
+        return $this->asSuccess(
+            $message,
+            // Reset messages
+            data: [
+                'notice' => '',
+                'error' => ''
+            ],
+            notificationSettings: [
+                'details' => '<button class="btn" onclick="window.location.reload()">Refresh</button>'
+            ]
+        );
     }
 
 }
