@@ -35,3 +35,24 @@
     font-weight: bold;
     color: var(--red-800)
 }
+
+.pa-actions {
+    display: flex;
+}
+
+.pa-actions > div {
+    margin-right: 24px;
+}
+
+.pa-form {
+    border: 1px solid var(--gray-200);
+    padding: 8px;
+}
+
+.pa-form .pa-button {
+    margin-top: 24px;
+}
+
+.pa-form .pa-input {
+    margin-bottom: 6px;
+}

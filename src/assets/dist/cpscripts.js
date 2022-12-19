@@ -1,14 +1,61 @@
-function pa_publish(id, draftId) {
+function pa_release(id) {
     if (!confirm('Publish this package? This cannont be undone!')) {
         return
     }
 
-    Craft.sendActionRequest("POST", 'package/publish/publish', {data: {elementId: id, draftId: draftId}})
+    var options = {}
+    document.getElementsByName('pa-release-options').forEach(
+        (input) => options[input.id] = input.checked
+    )
+
+    Craft.sendActionRequest("POST", 'package/package/release',
+            {
+                data: {
+                    packageId: id,
+                    options: options
+                }
+            })
         .then((response) => {
             Craft.cp.displayNotice(response.data.message, response.data.notificationSettings)
 
             pa_message('pa-notice', response.data.notice)
             pa_message('pa-error', response.data.error)
+
+            co_getSectionHtml('package-0-0-0');
+
+        })
+        .catch((error) => {
+            Craft.cp.displayError(error.response.data.message)
+        })
+}
+
+function pa_attachNewDrafts(packageId) {
+    ids = []
+    var inputs = document.getElementsByName('attach-new-drafts[]');
+    inputs.forEach(
+        (input) => ids.push(input.value)
+    )
+
+    var options = {}
+    document.getElementsByName('pa-attach-options').forEach(
+        (input) => options[input.id] = input.checked
+    )
+
+    Craft.sendActionRequest("POST", 'package/package/attach-new-drafts',
+            {
+                data: {
+                    packageId: packageId,
+                    ids: ids,
+                    options: options
+                }
+            })
+        .then((response) => {
+            Craft.cp.displayNotice(response.data.message, response.data.notificationSettings)
+
+            pa_message('pa-notice', response.data.notice)
+            pa_message('pa-error', response.data.error)
+
+            co_getSectionHtml('package-0-0-0');
 
         })
         .catch((error) => {
@@ -21,5 +68,7 @@ function pa_message(id, text) {
     if (text) {
         element.innerHTML = text
         element.style.display = ''
-    } else element.style.display = 'none'
+    } else {
+        element.style.display = 'none'
+    }
 }

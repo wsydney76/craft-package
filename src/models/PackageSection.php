@@ -3,6 +3,7 @@
 namespace wsydney76\package\models;
 
 use Craft;
+use craft\db\Paginator;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\Entry;
 use wsydney76\contentoverview\models\TableSection;
@@ -49,12 +50,6 @@ class PackageSection extends TableSection
             'slideout',
             'compare',
             'relationships',
-            $co->createAction()
-                ->label('Remove from package')
-                ->icon('@wsydney76/package/templates/icons/x-circle.svg')
-                ->cpAction('package/publish/remove-from-package')
-                ->extraParams(['packageId' => $this->elementId])
-            ,
             'view'
         ];
 
@@ -78,7 +73,7 @@ class PackageSection extends TableSection
 
     public function getHelp(): array|string
     {
-        return Craft::$app->view->renderTemplate('package/action.twig', ['entry' => $this->entry]);
+        return Craft::$app->view->renderTemplate('package/actions.twig', ['entry' => $this->entry, 'sectionConfig' => $this]);
     }
 
     public function getQuery(array $params): ElementQueryInterface
@@ -88,6 +83,17 @@ class PackageSection extends TableSection
         }
 
         return Plugin::getInstance()->packageService->getQuery($this->elementId, $this->section);
+    }
+
+    public function getSources(): string|array
+    {
+        if (!$this->section) {
+            return '*';
+        }
+        return collect($this->_normalizeToArray($this->section))->map(fn($section) =>
+            'section:' . Craft::$app->sections->getSectionByHandle($section)->uid
+        )->toArray();
+
     }
 
 }
