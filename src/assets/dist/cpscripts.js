@@ -1,4 +1,4 @@
-function pa_release(id) {
+function pa_release(packageId) {
     if (!confirm('Publish this package? This cannont be undone!')) {
         return
     }
