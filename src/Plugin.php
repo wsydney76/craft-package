@@ -3,7 +3,6 @@
 namespace wsydney76\package;
 
 use Craft;
-use const DIRECTORY_SEPARATOR;
 use craft\base\Model;
 use craft\base\Plugin as BasePlugin;
 use craft\elements\Entry;
@@ -14,9 +13,11 @@ use craft\services\Fields;
 use craft\web\View;
 use wsydney76\package\behaviors\EntryBehavior;
 use wsydney76\package\fields\MaintainPackage;
+use wsydney76\package\fields\TestField;
 use wsydney76\package\models\Settings;
 use wsydney76\package\services\PackageService;
 use yii\base\Event;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * package plugin
@@ -79,5 +80,6 @@ class Plugin extends BasePlugin
             function(RegisterComponentTypesEvent $event) {
                 $event->types[] = MaintainPackage::class;
             });
+
     }
 }

@@ -5,12 +5,15 @@ namespace wsydney76\package\fields;
 use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
+use craft\base\PreviewableFieldInterface;
+use craft\helpers\Html;
+use craft\helpers\UrlHelper;
 use wsydney76\package\Plugin;
 
 /**
  * Package Section field type
  */
-class MaintainPackage extends Field
+class MaintainPackage extends Field implements PreviewableFieldInterface
 {
 
     public static function displayName(): string
@@ -28,6 +31,10 @@ class MaintainPackage extends Field
         return false;
     }
 
+    public static function supportedTranslationMethods(): array
+    {
+        return [Field::TRANSLATION_METHOD_NONE];
+    }
 
     public function normalizeValue(mixed $value, ElementInterface $element = null): mixed
     {
@@ -43,6 +50,17 @@ class MaintainPackage extends Field
             'packageId' => $element->id,
             'query' => $query
         ]);
+    }
+
+    public function getTableAttributeHtml(mixed $value, ElementInterface $element): string
+    {
+        return Html::tag('a',
+            Craft::t('package', 'Maintain package'),
+            [
+                'href' => UrlHelper::cpUrl('contentoverview/package', ['elementId' => $element->id]),
+                'target' => '_blank',
+                'class' => 'go'
+            ]);
     }
 
 }
