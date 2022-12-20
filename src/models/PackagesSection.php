@@ -9,7 +9,7 @@ use wsydney76\contentoverview\Plugin;
 
 class PackagesSection extends Section
 {
-    public array|string $section = 'package';
+    public array|string $section = 'paPackage';
 
     public ?string $layout = 'cardlets';
 

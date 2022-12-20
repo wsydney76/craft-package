@@ -13,8 +13,8 @@ use craft\services\Fields;
 use craft\web\View;
 use wsydney76\package\behaviors\EntryBehavior;
 use wsydney76\package\fields\MaintainPackage;
-use wsydney76\package\fields\TestField;
 use wsydney76\package\models\Settings;
+use wsydney76\package\services\MigrationService;
 use wsydney76\package\services\PackageService;
 use yii\base\Event;
 use const DIRECTORY_SEPARATOR;
@@ -27,6 +27,7 @@ use const DIRECTORY_SEPARATOR;
  * @copyright wsydney76
  * @license MIT
  * @property-read PackageService $packageService
+ * @property-read MigrationService $migrationService
  */
 class Plugin extends BasePlugin
 {
@@ -35,7 +36,10 @@ class Plugin extends BasePlugin
     public static function config(): array
     {
         return [
-            'components' => ['packageService' => PackageService::class],
+            'components' => [
+                'packageService' => PackageService::class,
+                'migrationService' => MigrationService::class
+            ]
         ];
     }
 
@@ -80,6 +84,5 @@ class Plugin extends BasePlugin
             function(RegisterComponentTypesEvent $event) {
                 $event->types[] = MaintainPackage::class;
             });
-
     }
 }

@@ -33,9 +33,9 @@ class PackageSection extends TableSection
         $this->imageField = Plugin::getInstance()->getSettings()->imageField;
 
         $this->columns = [
-            $co->createTableColumn()
-                ->label('IDs')
-                ->template('package/ids.twig'),
+//            $co->createTableColumn()
+//                ->label('IDs')
+//                ->template('package/ids.twig'),
             $co->createTableColumn()
                 ->label('Status')
                 ->template('package/status.twig'),
@@ -63,6 +63,9 @@ class PackageSection extends TableSection
         }
 
         Craft::$app->view->registerAssetBundle('wsydney76\\package\\assets\\PackageAssetBundle');
+        if (Craft::$app->plugins->isPluginEnabled('work')) {
+            Craft::$app->view->registerAssetBundle('wsydney76\\contentoverview\\assets\\WorkPluginAssetBundle');
+        }
     }
 
 

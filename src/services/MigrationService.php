@@ -1,0 +1,165 @@
+<?php
+
+namespace wsydney76\package\services;
+
+use Craft;
+use craft\fieldlayoutelements\CustomField;
+use craft\fields\Entries;
+use craft\helpers\App;
+use craft\models\FieldGroup;
+use craft\models\Section;
+use craft\models\Section_SiteSettings;
+use craft\records\FieldGroup as FieldGroupRecord;
+use modules\main\helpers\FileHelper;
+use wsydney76\contentoverview\Plugin;
+use wsydney76\package\fields\MaintainPackage;
+use yii\base\Component;
+use yii\base\Exception;
+
+/**
+ * Migration Service service
+ */
+class MigrationService extends Component
+{
+
+    public function install(): bool
+    {
+
+        // Create field group package
+        $fieldGroup = $this->getFieldGroup('Package');
+        if (!$fieldGroup) {
+            $fieldGroup = new FieldGroup([
+                'name' => 'Package',
+            ]);
+
+            if (!Craft::$app->fields->saveGroup($fieldGroup)) {
+                return false;
+            }
+        }
+
+        // Create maintain package field
+        $maintainPackageField = Craft::$app->fields->getFieldByHandle('paPackage');
+        if (!$maintainPackageField) {
+            $maintainPackageField = new MaintainPackage([
+                'groupId' => $fieldGroup->id,
+                'name' => 'Maintain Package',
+                'handle' => 'paMaintainPackage'
+            ]);
+
+            if (!Craft::$app->fields->saveField($maintainPackageField)) {
+                return false;
+            }
+        }
+
+
+        // Create package section
+        $section = Craft::$app->sections->getSectionByHandle('paPackage');
+        if (!$section) {
+            $section = new Section([
+                    'name' => 'Package',
+                    'handle' => 'paPackage',
+                    'type' => Section::TYPE_CHANNEL,
+                    'siteSettings' => collect(Craft::$app->sites->getAllSites())
+                        ->map(fn($section) => new Section_SiteSettings([
+                            'siteId' => $section->id,
+                            'enabledByDefault' => true,
+                            'hasUrls' => false
+                        ]))
+                        ->toArray()
+                ]
+            );
+
+            if (!Craft::$app->sections->saveSection($section)) {
+                return false;
+            }
+
+            // Attach maintain package field to field layout
+            $type = $section->getEntryTypes()[0];
+            $layout = $type->getFieldLayout();
+            $tab = $layout->getTabs()[0];
+
+            $tab->setElements(array_merge($tab->getElements(), [
+                new CustomField($maintainPackageField)
+            ]));
+
+
+            Craft::$app->fields->saveLayout($layout);
+        }
+
+        // Create package field
+        $packageField = Craft::$app->fields->getFieldByHandle('paPackage');
+
+        if (!$packageField) {
+            $packageField = new Entries([
+                'groupId' => $fieldGroup->id,
+                'name' => 'Package',
+                'handle' => 'paPackage',
+                'sources' => [
+                    "section:$section->uid"
+                ]
+            ]);
+
+            if (!Craft::$app->fields->saveField($packageField)) {
+                return false;
+            }
+        }
+
+        // Create package.php plugin settings file
+        try {
+            $dir = App::parseEnv('@config');
+            $dest = $dir . DIRECTORY_SEPARATOR . 'package.php';
+            if (!is_file($dest)) {
+                $source = App::parseEnv('@wsydney76/package/scaffold/config.txt');
+                copy($source, $dest);
+            }
+        } catch (Exception $e) {
+            Craft::warning('Could not copy plugin config package.php: ' . $e->getMessage());
+        }
+
+        // Create package.php page config file
+        try {
+            $dir = App::parseEnv(Plugin::getInstance()->getSettings()->configPath);
+            $dest = $dir . DIRECTORY_SEPARATOR . 'package.php';
+            if (!is_file($dest)) {
+                if (!is_dir($dir)) {
+                    FileHelper::createDirectory($dir);
+                }
+
+                $source = App::parseEnv('@wsydney76/package/scaffold/package.txt');
+                copy($source, $dest);
+            }
+        } catch (Exception $e) {
+            Craft::warning('Could not copy page config package.php: ' . $e->getMessage());
+        }
+
+        return true;
+    }
+
+
+    public function uninstall(): bool
+    {
+        // Remove package section. This also deletes all package entries and all relations to them
+        $section = Craft::$app->sections->getSectionByHandle('paPackage');
+        if ($section) {
+            if (!Craft::$app->sections->deleteSectionById($section->id)) {
+                return false;
+            }
+        }
+
+        // Remove field group. This also deletes all fields in it.
+        $fieldGroup = $this->getFieldGroup('package');
+        if ($fieldGroup) {
+            if (!Craft::$app->fields->deleteGroupById($fieldGroup['id'])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function getFieldGroup(string $fieldGroup)
+    {
+        return FieldGroupRecord::findOne(['name' => $fieldGroup]);
+    }
+
+}

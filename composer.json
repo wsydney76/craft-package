@@ -13,7 +13,7 @@
     "require": {
         "php": ">=8.0.2",
         "craftcms/cms": "^4.3.5",
-        "wsydney76/craft-contentoverview": "^5.2.0"
+        "wsydney76/craft-contentoverview": "^5.2.1"
     },
     "autoload": {
         "psr-4": {
