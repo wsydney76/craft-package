@@ -2,6 +2,7 @@
 
 namespace wsydney76\package\models;
 
+use Craft;
 use craft\elements\Entry;
 use wsydney76\contentoverview\models\Section;
 use wsydney76\contentoverview\Plugin;
@@ -9,17 +10,17 @@ use wsydney76\contentoverview\Plugin;
 class PackagesSection extends Section
 {
     public array|string $section = 'package';
-    public array|string $imageField = 'featuredImage';
-    public ?string $layout = 'cards';
-    public array|string $help = 'HILFE!!!';
+
+    public ?string $layout = 'cardlets';
 
 
     public function init(): void
     {
         $this->actions = [
+            'slideout',
             Plugin::getInstance()->contentoverview->createAction()
-                ->label('Details')
-                ->icon('@appicons/wand.svg')
+                ->label(Craft::t('package', 'Maintain package'))
+                ->icon('@wsydney76/package/icons/publish.svg')
                 ->cpUrl('contentoverview/package')
         ];
     }

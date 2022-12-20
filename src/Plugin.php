@@ -3,15 +3,18 @@
 namespace wsydney76\package;
 
 use Craft;
-use craft\base\Model;
-use wsydney76\package\models\Settings;
 use const DIRECTORY_SEPARATOR;
+use craft\base\Model;
 use craft\base\Plugin as BasePlugin;
 use craft\elements\Entry;
 use craft\events\DefineBehaviorsEvent;
+use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterTemplateRootsEvent;
+use craft\services\Fields;
 use craft\web\View;
 use wsydney76\package\behaviors\EntryBehavior;
+use wsydney76\package\fields\MaintainPackage;
+use wsydney76\package\models\Settings;
 use wsydney76\package\services\PackageService;
 use yii\base\Event;
 
@@ -38,7 +41,6 @@ class Plugin extends BasePlugin
     public function init()
     {
         parent::init();
-
 
 
         // Defer most setup tasks until Craft is fully initialized
@@ -70,5 +72,12 @@ class Plugin extends BasePlugin
                 $event->behaviors[] = EntryBehavior::class;
             }
         );
+
+        Event::on(
+            Fields::class,
+            Fields::EVENT_REGISTER_FIELD_TYPES,
+            function(RegisterComponentTypesEvent $event) {
+                $event->types[] = MaintainPackage::class;
+            });
     }
 }

@@ -1,0 +1,7 @@
+<div style="margin: 24px 0">
+    {{ query.count }} {{ "Entries in package"|t('package') }}
+</div>
+
+<a class="btn" href="{{ cpUrl('contentoverview/package', {elementId: packageId}) }}" target="_blank">
+    {{ "Maintain package"|t('package') }}
+</a>
