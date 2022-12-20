@@ -4,7 +4,9 @@ namespace wsydney76\package\controllers;
 
 use Craft;
 use craft\web\Controller;
+use Throwable;
 use wsydney76\package\Plugin;
+use yii\base\Exception;
 use function implode;
 
 class PackageController extends Controller
@@ -27,6 +29,15 @@ class PackageController extends Controller
             if (!Plugin::getInstance()->packageService->checkAllValid($entries)) {
                 return $this->asFailure("Could not run: Some entries contain errors.");
             }
+        }
+
+        if ($options['createBackup']) {
+            try {
+                $backupPath = Craft::$app->getDb()->backup();
+            } catch (Throwable $e) {
+                return $this->asFailure('Could not create backup: ' . $e->getMessage());
+            }
+            $messages[] = "Backup created in $backupPath";
         }
 
         foreach ($entries as $entry) {

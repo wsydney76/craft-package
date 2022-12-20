@@ -2,29 +2,34 @@
 
 <div class="pa-actions">
     <div class="pa-form">
+        <h2>Release package</h2>
+        <div class="pa-input">
+            {{ input('checkbox', 'pa-release-options', 1, {id: 'enableEntries', checked: true}) }}
+            <label for="enableEntries">Enable all disabled entries</label>
+        </div>
+        <div class="pa-input">
+            {{ input('checkbox', 'pa-release-options', 1, {id: 'removeFromPackage', checked: true}) }}
+            <label for="removeFromPackage">Remove released entries from package</label>
+        </div>
+        <div class="pa-input">
+            {{ input('checkbox', 'pa-release-options', 1, {id: 'validAllOnly', checked: true}) }}
+            <label for="validAllOnly">Execute only if all entries pass validation.</label>
+        </div>
+        <div class="pa-input">
+            {{ input('checkbox', 'pa-release-options', 1, {id: 'createBackup', checked: false}) }}
+            <label for="createBackup">Create database backup.</label>
+        </div>
 
-            <div class="pa-input">
-                {{ input('checkbox', 'pa-release-options', 1, {id: 'enableEntries', checked: true}) }}
-                <label for="enableEntries">Enable all disabled entries</label>
-            </div>
-            <div class="pa-input">
-                {{ input('checkbox', 'pa-release-options', 1, {id: 'removeFromPackage', checked: true}) }}
-                <label for="removeFromPackage">Remove released entries from package</label>
-            </div>
-            <div class="pa-input">
-                {{ input('checkbox', 'pa-release-options', 1, {id: 'validAllOnly', checked: true}) }}
-                <label for="validAllOnly">Execute only if all entries pass validation.</label>
-            </div>
-
-            <button type="button" onclick="pa_release({{ entry.id }})"
-                    class="btn submit pa-button">
-                Release package
-            </button>
+        <button type="button" onclick="pa_release({{ entry.id }})"
+                class="btn submit pa-button">
+            Release package
+        </button>
 
     </div>
 
 
     <div class="pa-form">
+        <h2>Create drafts for package</h2>
         {{ forms.elementSelectField({
             id: 'attach-new-drafts',
             name: 'attach-new-drafts',
@@ -51,6 +56,8 @@
 
     <div class="pa-form">
 
+        <h2>Create new entry for package</h2>
+
         {{ forms.textField({
             label: 'Title',
             id: 'title',
@@ -67,7 +74,7 @@
 
         <button type="button" onclick="pa_attachNewEntry({{ entry.id }})"
                 class="btn submit pa-button">
-            Create and attach to package
+            Create entry and attach to package
         </button>
     </div>
 

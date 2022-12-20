@@ -17,8 +17,9 @@
 
                 <div>
                     {% for key, errors in siteErrors.errors %}
+
                         <div class="pa-key">
-                            {{ key }}
+                            {{ _self.getFieldname(key) }}
                         </div>
                         <div>
                             {% for error in errors %}
@@ -36,3 +37,15 @@
 {% else %}
     <b class="pa-success">OK</b>
 {% endif %}
+
+{% macro getFieldname(key) %}
+    {% if '[' in key %}
+        {% set segments = key|split('[') %}
+        {% set field = craft.app.fields.fieldByHandle(segments[0]) %}
+        {{ field ? field.name ~ '[' ~ segments[1] :  key }}
+    {% else %}
+        {% set field = craft.app.fields.fieldByHandle(key) %}
+        {{ field ? field.name :  key }}
+    {% endif %}
+
+{% endmacro %}
