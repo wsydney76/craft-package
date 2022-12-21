@@ -11,6 +11,7 @@ use wsydney76\contentoverview\Plugin as ContentoverviewPlugin;
 use wsydney76\package\Plugin;
 use yii\web\NotFoundHttpException;
 use function collect;
+use function is_string;
 
 class PackageSection extends TableSection
 {
@@ -86,23 +87,39 @@ class PackageSection extends TableSection
             $this->packageId = $params['queryParams']['elementId'];
         }
 
-        return Plugin::getInstance()->packageService->getQuery($this->packageId, $this->section);
+        return Plugin::getInstance()->packageService->getQuery($this->packageId);
     }
 
-    public function getSources(): string|array
+    public function getSections(Entry $package): string|array
     {
+        $settings = Plugin::getInstance()->getSettings();
+        if (isset($settings->sections[$package->section->handle])) {
+            return $settings->sections[$package->section->handle];
+        }
+
         if (!$this->section) {
             return '*';
         }
-        return collect($this->_normalizeToArray($this->section))->map(fn($section) =>
-            'section:' . Craft::$app->sections->getSectionByHandle($section)->uid
-        )->toArray();
-
+        return $this->_normalizeToArray($this->section);
     }
 
-    public function getSectionOptions(): array
+    public function getSources(Entry $package): string|array
     {
-        if (!$this->section) {
+        $sections = $this->getSections($package);
+        if (is_string($sections) && $sections === '*' ) {
+            return $sections;
+        }
+
+        return collect($sections)->map(fn($section) =>
+            'section:' . Craft::$app->sections->getSectionByHandle($section)->uid
+        )->toArray();
+    }
+
+    public function getSectionOptions(Entry $package): array
+    {
+        $sections = $this->getSections($package);
+
+        if (is_string($sections) && $sections === '*' ) {
             return collect(Craft::$app->sections->getAllSections())
                 ->map(fn ($section) => [
                     'label' => $section->name,
@@ -110,8 +127,7 @@ class PackageSection extends TableSection
                 ])->toArray();
         }
 
-        $sections = collect($this->_normalizeToArray($this->section));
-        return $sections
+        return collect($sections)
             ->map(fn ($section) => [
                 'label' => Craft::$app->sections->getSectionByHandle($section),
                 'value' => $section

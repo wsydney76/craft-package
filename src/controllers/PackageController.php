@@ -23,7 +23,7 @@ class PackageController extends Controller
         $messages = [];
         $errors = [];
 
-        $entries = Plugin::getInstance()->packageService->getQuery($packageId)->collect();
+        $entries = Plugin::getInstance()->packageService->getEntries($packageId);
 
         if ($options['validAllOnly']) {
             if (!Plugin::getInstance()->packageService->checkAllValid($entries)) {

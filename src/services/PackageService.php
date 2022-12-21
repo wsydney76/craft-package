@@ -6,11 +6,15 @@ use Craft;
 use craft\elements\Entry;
 use craft\helpers\Cp;
 use Illuminate\Support\Collection;
+use ModifyEntriesEvent;
 use ModifyQueryEvent;
 use wsydney76\package\Plugin;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\web\NotFoundHttpException;
+use function extract;
+use const EXTR_OVERWRITE;
+use const EXTR_PREFIX_ALL;
 
 /**
  * Package Service service
@@ -19,12 +23,12 @@ class PackageService extends Component
 {
 
     public const EVENT_MODIFY_QUERY = 'eventModifyQuery';
+    public const EVENT_MODIFY_ENTRIES = 'eventModifyEntries';
 
-    public function getQuery(?int $id, string|array $section = null)
+    public function getQuery(?int $packageId)
     {
 
         $query = Entry::find()
-            ->section($section)
             ->status(null)
             ->drafts(null)
             ->provisionalDrafts(null)
@@ -35,11 +39,12 @@ class PackageService extends Component
 
         if ($this->hasEventHandlers(self::EVENT_MODIFY_QUERY)) {
             $this->trigger(self::EVENT_MODIFY_QUERY, new ModifyQueryEvent([
+                'packageId' => $packageId,
                 'query' => $query
             ]));
         } else {
             $query->relatedTo([
-                'element' => $id,
+                'element' => $packageId,
                 'field' => Plugin::getInstance()->getSettings()->relationFieldHandle
             ]);
         }
@@ -167,11 +172,25 @@ class PackageService extends Component
             throw new NotFoundHttpException("Entry with $packageId not found.");
         }
 
+        extract($options, EXTR_PREFIX_ALL, 'options');
+
         $currentUser = Craft::$app->user->identity;
 
         $provisionalDrafts = Entry::find()->draftOf($entry)->provisionalDrafts(true)->status(null)->collect();
 
-        if ($options['ignoreExistingDrafts']) {
+        if($options_attachAs === 'attachReleased') {
+
+            $entry->setFieldValue(Plugin::getInstance()->getSettings()->relationFieldHandle, [$packageId]);
+            $entry->scenario = Entry::SCENARIO_ESSENTIALS;
+
+            if (!Craft::$app->elements->saveElement($entry, updateSearchIndex: false)) {
+                return [false, "Could not resave new draft for $entry->title"];
+            }
+
+            return [true, "Attached $entry->title"];
+        }
+
+        if ($options_ignoreExistingDrafts) {
             // Never create a second provisional draft for a user
             foreach ($provisionalDrafts as $provisionalDraft) {
                 if ($provisionalDraft->creatorId === $currentUser->id) {
@@ -192,11 +211,13 @@ class PackageService extends Component
             return [false, "No permission for $entry->title"];
         }
 
+
+
         $draft = Craft::$app->drafts->createDraft(
             $entry,
             $currentUser->id,
             notes: "Created for package $packageEntry->title",
-            provisional: $options['createProvisionalDraft'],
+            provisional: $options_attachAs === 'createProvisionalDraft',
         );
 
         if (!$draft) {
@@ -245,6 +266,21 @@ class PackageService extends Component
         }
 
         return [true, $options['title'] . " created"];
+    }
+
+    public function getEntries(int $packageId): Collection
+    {
+        $entries = $this->getQuery($packageId)->collect();
+        if ($this->hasEventHandlers(self::EVENT_MODIFY_ENTRIES)) {
+            $event = new ModifyEntriesEvent([
+                'packageId' => $packageId,
+                'entries' => $entries
+            ]);
+            $this->trigger(self::EVENT_MODIFY_ENTRIES, $event);
+            $entries = $event->entries;
+        }
+
+        return $entries;
     }
 
 

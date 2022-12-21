@@ -8,4 +8,5 @@ class Settings extends Model
 {
     public array|string $imageField = '';
     public string $relationFieldHandle = 'paPackage';
+    public ?array $sections = null;
 }

@@ -14,23 +14,32 @@ Run `composer require wsydney76/craft-package` (coming soon...)
 
 Run `craft plugin/install package` or install from settings/plugin page in the Control Panel.
 
+This will 
+
+* create a section `Package` (handle `paPackage`).
+* create a field group `Package`.
+* create a field `Package` (handle `paPackage`).
+* create a field `Maintain Package` (handle `paMaintainPackage`)  and assigns it to the `Package` section.
+* create a `config/package.php` plugin setting file.
+* create a `config/contentoverview/package.php` page config file. 
+
+Check logs if the installation fails.
+
 ## Further steps
 
-* Edit the `config/contentoverview/package.php`  file (unless reconfigured) and add the sections handled by this plugin.
-
-```php
-$co->createSection(PackageSection::class)
-    ->section(['news', 'page'])
-```
-
-* Edit the `config/package.php` file and set the image field handle(s) for the sections handled by this plugin.
+* Edit the `config/package.php` file  
+* * set the image field handle(s) for the sections handled by this plugin.
 See [docs](https://wsydney76.github.io/craft-contentoverview/config/page-config.html#multi-section-setup) if multiple sections with different fields are used.
+* * edit the sections that you want to be part of a package. 
 
 ```php
 <?php
 
 return [
-    'imageField' => 'featuredImage'
+    'imageField' => 'featuredImage',
+    'sections' => [
+        'paPackage' => ['news', 'page'],
+    ]
 ];
 ```
 
@@ -81,3 +90,21 @@ return [
     ]
 ];
 ```
+
+## Use existing sections as a package
+
+Beneath the dedicated `Package` section, the package functionality can be added to any existing projects.
+
+For example you may wish to link `Screening` entries to a `Film` in order to release all of them in one go together with the film.
+
+* Add sections to `config/package.php`
+
+```php
+'sections' => [
+    'paPackage' => ['news', 'page'],
+    'film' => ['screening']
+]
+```
+
+* Add the `Maintain Package` field to the films' field layout.
+* Update the `Package` field so that it allows to link to film entries.

@@ -2,4 +2,7 @@
 
 return [
     // 'imageField' => 'featuredImage'
+    'sections' => [
+        // 'paPackage' => ['news','page']
+    ]
 ];

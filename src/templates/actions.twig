@@ -24,25 +24,40 @@
                 class="btn submit pa-button">
             Release package
         </button>
+        <button type="button" onclick= "Craft.createElementEditor('\\craft\\elements\\Entry', {
+                elementId: {{ entry.id }},
+                siteId: {{ requestedSite.id }}
+                })"
+                class="btn pa-button">
+            Edit package
+        </button>
 
     </div>
 
 
     <div class="pa-form">
-        <h2>Create drafts for package</h2>
+        <h2>Attach entries to package</h2>
         {{ forms.elementSelectField({
             id: 'attach-new-drafts',
             name: 'attach-new-drafts',
             selectionLabel: 'Add entries',
             elementType: className(entry),
-            sources: sectionConfig.getSources(),
+            sources: sectionConfig.getSources(entry),
             first: true
         }) }}
 
         <div class="pa-input">
-            {{ input('checkbox', 'pa-attach-options', 1, {id: 'createProvisionalDraft', checked: false}) }}
-            <label for="createProvisionalDraft">Create as provisional draft</label>
+            {{ forms.select({
+                name: 'pa-attach-options',
+                id: 'attachAs',
+                options: [
+                    {label : 'Attach as new regular draft'|t('package'), value : 'createRegularDraft'},
+                    {label : 'Attach as new provisional draft'|t('package'), value : 'createProvisionalDraft'},
+                    {label : 'Attach released element'|t('package'), value : 'attachReleased'},
+                ]
+            }) }}
         </div>
+
         <div class="pa-input">
             {{ input('checkbox', 'pa-attach-options', 1, {id: 'ignoreExistingDrafts', checked: false}) }}
             <label for="ignoreExistingDrafts">Ignore existing drafts</label>
@@ -50,7 +65,7 @@
 
         <button type="button" onclick="pa_attachNewDrafts({{ entry.id }})"
                 class="btn submit pa-button">
-            Create draft(s) and attach to package
+            Attach
         </button>
     </div>
 
@@ -69,12 +84,12 @@
             label: 'Section',
             id: 'section',
             name: 'pa-create-options',
-            options: sectionConfig.getSectionOptions()
+            options: sectionConfig.getSectionOptions(entry)
         }) }}
 
         <button type="button" onclick="pa_attachNewEntry({{ entry.id }})"
                 class="btn submit pa-button">
-            Create entry and attach to package
+            Create and attach
         </button>
     </div>
 

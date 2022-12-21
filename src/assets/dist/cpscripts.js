@@ -3,14 +3,10 @@ function pa_release(packageId) {
         return
     }
 
-    var options = {}
-    document.getElementsByName('pa-release-options').forEach(
-        (input) => options[input.id] = input.checked
-    )
 
     pa_sendActionRequest('package/package/release', {
         packageId: packageId,
-        options: options
+        options: pa_getOptions(pa-release-options)
     })
 
 }
@@ -22,29 +18,20 @@ function pa_attachNewDrafts(packageId) {
         (input) => ids.push(input.value)
     )
 
-    var options = {}
-    document.getElementsByName('pa-attach-options').forEach(
-        (input) => options[input.id] = input.checked
-    )
 
     pa_sendActionRequest('package/package/attach-new-drafts', {
         packageId: packageId,
         ids: ids,
-        options: options
+        options: pa_getOptions('pa-attach-options')
     })
 
 }
 
 function pa_attachNewEntry(packageId) {
 
-    var options = {}
-    document.getElementsByName('pa-create-options').forEach(
-        (input) => options[input.id] = input.value
-    )
-
     pa_sendActionRequest('package/package/attach-new-entry', {
         packageId: packageId,
-        options: options
+        options: pa_getOptions('pa-create-options')
     })
 
 }
@@ -76,4 +63,12 @@ function pa_message(id, text) {
     } else {
         element.style.display = 'none'
     }
+}
+
+function pa_getOptions(id) {
+    var options = {}
+    document.getElementsByName(id).forEach(
+        (input) => options[input.id] = input.type === 'checkbox' ? input.checked : input.value
+    )
+    return options;
 }
