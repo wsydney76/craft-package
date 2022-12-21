@@ -93,7 +93,7 @@ return [
 
 ## Use existing sections as a package
 
-Beneath the dedicated `Package` section, the package functionality can be added to any existing projects.
+Beneath the dedicated `Package` section, the package functionality can be added to any existing sections.
 
 For example you may wish to link `Screening` entries to a `Film` in order to release all of them in one go together with the film.
 
