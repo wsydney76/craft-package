@@ -3,7 +3,6 @@
 namespace wsydney76\package\models;
 
 use Craft;
-use craft\db\Paginator;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\Entry;
 use wsydney76\contentoverview\models\TableSection;
@@ -47,6 +46,14 @@ class PackageSection extends TableSection
                 ->label('Validation')
                 ->template('package/validation.twig')
         ];
+
+        if (Plugin::getInstance()->getSettings()->addWorkflowColumn) {
+            $this->columns = array_merge($this->columns, [
+               $co->createTableColumn()
+                ->label('Workflow')
+                ->template('package/workflow.twig')
+            ]);
+        }
 
         $this->actions = [
             'slideout',

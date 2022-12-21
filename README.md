@@ -45,6 +45,16 @@ return [
 
 * Add the `Package` field to all sections handled by this plugin.
 
+### Workflow status
+
+You can add a workflow column if the workflow fields following the convention (workflowStatus, assignedTo, dueDate) are present in your project.
+
+```php
+'addWorkflowColumn' => true
+```
+
+![Screeshot](/images/workflow.jpg)
+
 ## Usage
 
 * Create a `Package` entry.
