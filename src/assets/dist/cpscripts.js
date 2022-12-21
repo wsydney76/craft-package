@@ -6,7 +6,7 @@ function pa_release(packageId) {
 
     pa_sendActionRequest('package/package/release', {
         packageId: packageId,
-        options: pa_getOptions(pa-release-options)
+        options: pa_getOptions('pa-release-options')
     })
 
 }

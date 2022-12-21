@@ -13,6 +13,7 @@ use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\web\NotFoundHttpException;
 use function extract;
+use function is_string;
 use const EXTR_OVERWRITE;
 use const EXTR_PREFIX_ALL;
 
@@ -45,7 +46,7 @@ class PackageService extends Component
         } else {
             $query->relatedTo([
                 'element' => $packageId,
-                'field' => Plugin::getInstance()->getSettings()->relationFieldHandle
+                'field' => $this->getRelationFieldHandle($packageId)
             ]);
         }
 
@@ -143,7 +144,7 @@ class PackageService extends Component
             throw new NotFoundHttpException();
         }
 
-        $fieldHandle = Plugin::getInstance()->getSettings()->relationFieldHandle;
+        $fieldHandle = $this->getRelationFieldHandle($packageId);
 
         $oldValues = $entry->getFieldValue($fieldHandle)->ids();
         $newValues = array_filter($oldValues, function($value) use ($packageId) {
@@ -178,9 +179,9 @@ class PackageService extends Component
 
         $provisionalDrafts = Entry::find()->draftOf($entry)->provisionalDrafts(true)->status(null)->collect();
 
-        if($options_attachAs === 'attachReleased') {
+        if ($options_attachAs === 'attachReleased') {
 
-            $entry->setFieldValue(Plugin::getInstance()->getSettings()->relationFieldHandle, [$packageId]);
+            $entry->setFieldValue($this->getRelationFieldHandle($packageId), [$packageId]);
             $entry->scenario = Entry::SCENARIO_ESSENTIALS;
 
             if (!Craft::$app->elements->saveElement($entry, updateSearchIndex: false)) {
@@ -212,7 +213,6 @@ class PackageService extends Component
         }
 
 
-
         $draft = Craft::$app->drafts->createDraft(
             $entry,
             $currentUser->id,
@@ -225,7 +225,7 @@ class PackageService extends Component
         }
 
         $draft->setCanonical($entry);
-        $draft->setFieldValue(Plugin::getInstance()->getSettings()->relationFieldHandle, [$packageId]);
+        $draft->setFieldValue($this->getRelationFieldHandle($packageId), [$packageId]);
         $draft->scenario = Entry::SCENARIO_ESSENTIALS;
 
         if (!Craft::$app->elements->saveElement($draft, updateSearchIndex: false)) {
@@ -256,7 +256,7 @@ class PackageService extends Component
         $entry->sectionId = $section->id;
         $entry->authorId = $currentUser->id;
         $entry->title = $options['title'];
-        $entry->setFieldValue(Plugin::getInstance()->getSettings()->relationFieldHandle, [$packageId]);
+        $entry->setFieldValue($this->getRelationFieldHandle($packageId), [$packageId]);
 
         if (!Craft::$app->drafts->saveElementAsDraft(
             $entry,
@@ -281,6 +281,23 @@ class PackageService extends Component
         }
 
         return $entries;
+    }
+
+    private function getRelationFieldHandle(?int $packageId): string
+    {
+        $settings = Plugin::getInstance()->getSettings()->relationFieldHandle;
+
+        if (is_string($settings)) {
+            return $settings;
+        }
+
+        $sectionHandle = Craft::$app->entries->getEntryById($packageId)->section->handle;
+
+        if (isset($settings[$sectionHandle])) {
+            return $settings[$sectionHandle];
+        }
+
+        return $settings['*'];
     }
 
 

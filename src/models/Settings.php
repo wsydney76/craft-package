@@ -7,6 +7,6 @@ use craft\base\Model;
 class Settings extends Model
 {
     public array|string $imageField = '';
-    public string $relationFieldHandle = 'paPackage';
+    public string|array $relationFieldHandle = 'paPackage';
     public ?array $sections = null;
 }

@@ -97,14 +97,21 @@ Beneath the dedicated `Package` section, the package functionality can be added 
 
 For example you may wish to link `Screening` entries to a `Film` in order to release all of them in one go together with the film.
 
-* Add sections to `config/package.php`
 
-```php
-'sections' => [
+* Add the `Maintain Package` field to the films' field layout.
+* Create a new entries field which allow only to link to film entries.
+* Attach it to the screenings field layout.
+
+Update your `config/package.php` file:
+
+```php{3,7}
+ 'sections' => [
     'paPackage' => ['news', 'page'],
     'film' => ['screening']
+],
+'relationFieldHandle' => [
+    '*' => 'paPackage',
+    'film' => 'filmPackage'
 ]
 ```
 
-* Add the `Maintain Package` field to the films' field layout.
-* Update the `Package` field so that it allows to link to film entries.
