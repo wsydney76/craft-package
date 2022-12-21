@@ -9,5 +9,7 @@ class Settings extends Model
     public array|string $imageField = '';
     public string|array $relationFieldHandle = 'paPackage';
     public ?array $sections = null;
+    public bool $addIdsColumn = false;
+    public bool $addDraftInfoColumn = true;
     public bool $addWorkflowColumn = false;
 }

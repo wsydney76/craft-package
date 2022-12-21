@@ -32,28 +32,49 @@ class PackageSection extends TableSection
 
         $this->imageField = Plugin::getInstance()->getSettings()->imageField;
 
-        $this->columns = [
-//            $co->createTableColumn()
-//                ->label('IDs')
-//                ->template('package/ids.twig'),
+        // Set columns
+
+        $columns = collect([]);
+
+        if (Plugin::getInstance()->getSettings()->addIdsColumn) {
+            $columns = $columns->push(
+                $co->createTableColumn()
+                    ->label('Ids')
+                    ->template('package/ids.twig')
+            );
+        }
+
+        $columns = $columns->push(
             $co->createTableColumn()
                 ->label('Status')
                 ->template('package/status.twig'),
-            $co->createTableColumn()
-                ->label('Draft info')
-                ->template('package/draftinfo.twig'),
+        );
+
+        if (Plugin::getInstance()->getSettings()->addWorkflowColumn) {
+            $columns = $columns->push(
+                $co->createTableColumn()
+                    ->label('Draft info')
+                    ->template('package/draftinfo.twig')
+            );
+        }
+
+        if (Plugin::getInstance()->getSettings()->addWorkflowColumn) {
+            $columns = $columns->push(
+                $co->createTableColumn()
+                    ->label('Workflow')
+                    ->template('package/workflow.twig')
+            );
+        }
+
+        $columns = $columns->push(
             $co->createTableColumn()
                 ->label('Validation')
                 ->template('package/validation.twig')
-        ];
+        );
 
-        if (Plugin::getInstance()->getSettings()->addWorkflowColumn) {
-            $this->columns = array_merge($this->columns, [
-               $co->createTableColumn()
-                ->label('Workflow')
-                ->template('package/workflow.twig')
-            ]);
-        }
+
+        $this->columns = $columns->toArray();
+
 
         $this->actions = [
             'slideout',

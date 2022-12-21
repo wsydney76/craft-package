@@ -125,3 +125,58 @@ Update your `config/package.php` file:
 ]
 ```
 
+### Customizing
+
+As always you can modify the plugins behavior by providing your own Section class,
+
+e.g.
+
+```php
+// config/contentoverview/package.php
+
+<?php
+
+use modules\contentoverview\models\MyPackageSection;
+use wsydney76\contentoverview\Plugin;
+
+$co = Plugin::getInstance()->contentoverview;
+
+return [
+    'sections' => [
+        $co->createSection(MyPackageSection::class)
+    ]
+];
+
+// modules/contentoverview/models
+
+<?php
+
+namespace modules\contentoverview\models;
+
+use Illuminate\Support\Collection;
+use wsydney76\contentoverview\Plugin;
+use wsydney76\package\models\PackageSection;
+
+class MyPackageSection extends PackageSection
+{
+    public function getColumns(): Collection
+    {
+
+        $co = Plugin::getInstance()->contentoverview;
+
+        $columns = parent::getColumns();
+
+        // Insert a new column
+        $columns->splice($columns->count() - 1, 0,
+            [
+                $co->createTableColumn()
+                    ->label('My Test Column')
+                    ->template('test/mytestcolumn.twig')
+            ]);
+
+        return $columns;
+    }
+}
+```
+
+
