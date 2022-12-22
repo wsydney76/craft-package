@@ -283,7 +283,7 @@ class PackageService extends Component
         return $entries;
     }
 
-    private function getRelationFieldHandle(?int $packageId): string
+    public function getRelationFieldHandle(?int $packageId): string
     {
         $settings = Plugin::getInstance()->getSettings()->relationFieldHandle;
 

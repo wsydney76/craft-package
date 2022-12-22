@@ -1,0 +1,22 @@
+{% import '_includes/forms' as forms %}
+
+<h2>Create new entry for package</h2>
+
+{{ forms.textField({
+    label: 'Title',
+    id: 'title',
+    name: 'pa-create-options'
+}) }}
+
+
+{{ forms.selectField({
+    label: 'Section',
+    id: 'section',
+    name: 'pa-create-options',
+    options: sectionConfig.getSectionOptions(entry)
+}) }}
+
+<button type="button" onclick="pa_attachNewEntry({{ entry.id }})"
+        class="btn submit pa-button">
+    Create and attach
+</button>

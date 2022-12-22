@@ -12,4 +12,9 @@ class Settings extends Model
     public bool $addIdsColumn = false;
     public bool $addDraftInfoColumn = true;
     public bool $addWorkflowColumn = false;
+    public array $formTemplates = [
+        '/package/forms/release.twig',
+        '/package/forms/attach-drafts.twig',
+        '/package/forms/attach-new.twig'
+    ];
 }

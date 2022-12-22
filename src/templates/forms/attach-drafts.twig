@@ -1,0 +1,33 @@
+{% import '_includes/forms' as forms %}
+
+<h2>Attach entries to package</h2>
+{{ forms.elementSelectField({
+    id: 'attach-new-drafts',
+    name: 'attach-new-drafts',
+    selectionLabel: 'Add entries',
+    elementType: className(entry),
+    sources: sectionConfig.getSources(entry),
+    first: true
+}) }}
+
+<div class="pa-input">
+    {{ forms.select({
+        name: 'pa-attach-options',
+        id: 'attachAs',
+        options: [
+            {label : 'Attach as new regular draft'|t('package'), value : 'createRegularDraft'},
+            {label : 'Attach as new provisional draft'|t('package'), value : 'createProvisionalDraft'},
+            {label : 'Attach released element'|t('package'), value : 'attachReleased'},
+        ]
+    }) }}
+</div>
+
+<div class="pa-input">
+    {{ input('checkbox', 'pa-attach-options', 1, {id: 'ignoreExistingDrafts', checked: false}) }}
+    <label for="ignoreExistingDrafts">Ignore existing drafts</label>
+</div>
+
+<button type="button" onclick="pa_attachNewDrafts({{ entry.id }})"
+        class="btn submit pa-button">
+    Attach
+</button>

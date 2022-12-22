@@ -5,6 +5,8 @@ namespace wsydney76\package\models;
 use Craft;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\Entry;
+use craft\helpers\App;
+use Illuminate\Support\Collection;
 use wsydney76\contentoverview\models\TableSection;
 use wsydney76\contentoverview\Plugin as ContentoverviewPlugin;
 use wsydney76\package\Plugin;
@@ -40,21 +42,21 @@ class PackageSection extends TableSection
             $columns = $columns->push(
                 $co->createTableColumn()
                     ->label('Ids')
-                    ->template('package/ids.twig')
+                    ->template('package/columns/ids.twig')
             );
         }
 
         $columns = $columns->push(
             $co->createTableColumn()
                 ->label('Status')
-                ->template('package/status.twig'),
+                ->template('package/columns/status.twig'),
         );
 
         if (Plugin::getInstance()->getSettings()->addWorkflowColumn) {
             $columns = $columns->push(
                 $co->createTableColumn()
                     ->label('Draft info')
-                    ->template('package/draftinfo.twig')
+                    ->template('package/columns/draftinfo.twig')
             );
         }
 
@@ -62,14 +64,14 @@ class PackageSection extends TableSection
             $columns = $columns->push(
                 $co->createTableColumn()
                     ->label('Workflow')
-                    ->template('package/workflow.twig')
+                    ->template('package/columns/workflow.twig')
             );
         }
 
         $columns = $columns->push(
             $co->createTableColumn()
                 ->label('Validation')
-                ->template('package/validation.twig')
+                ->template('package/columns/validation.twig')
         );
 
 
@@ -80,6 +82,8 @@ class PackageSection extends TableSection
             'slideout',
             'compare',
             'relationships',
+            'delete',
+            'release',
             'view'
         ];
 
@@ -113,6 +117,11 @@ class PackageSection extends TableSection
         }
 
         return Plugin::getInstance()->packageService->getQuery($this->packageId);
+    }
+
+    public function getFormTemplates(): Collection {
+        return collect(Plugin::getInstance()->getSettings()->formTemplates)
+            ->map(fn ($template) => App::parseEnv($template));
     }
 
     public function getSections(Entry $package): string|array

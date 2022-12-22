@@ -1,5 +1,7 @@
-<span class="{{ entry.dueDate and entry.dueDate < now  ? 'co-warning'}}">
-    {{ entry.workflowStatus.label }}
+<span class="{{ entry.dueDate and entry.dueDate < now  ? 'co-warning' }}">
+   {% if entry.workflowStatus %}
+       {{ entry.workflowStatus.label }}
+   {% endif %}
 
     {% if entry.assignedTo %}
         {% set user = entry.assignedTo.one %}
