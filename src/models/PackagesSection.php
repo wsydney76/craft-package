@@ -22,6 +22,7 @@ class PackagesSection extends Section
                 ->label(Craft::t('package', 'Maintain package'))
                 ->icon('@wsydney76/package/icons/publish.svg')
                 ->cpUrl('contentoverview/package')
+                ->cpUrlTarget('')
         ];
     }
 
