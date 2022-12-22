@@ -125,7 +125,7 @@ Update your `config/package.php` file:
 ]
 ```
 
-### Customizing
+## Customizing
 
 As always you can modify the plugins behavior by providing your own Section class,
 
@@ -179,4 +179,16 @@ class MyPackageSection extends PackageSection
 }
 ```
 
+## Release Actions
 
+The plugin registers a `Release` action that can be used in the `ContentOverview` plugin section settings.
+
+The action shows up if an entry is not in the `released` status and if the current user has sufficient permissions.
+
+```php
+->actions([
+    'release'
+])
+```
+
+![Screenshot](/images/release.jpg)
