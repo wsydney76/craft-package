@@ -5,6 +5,7 @@ namespace wsydney76\package\services;
 use Craft;
 use craft\elements\Entry;
 use craft\helpers\Cp;
+use craft\helpers\Json;
 use Illuminate\Support\Collection;
 use ModifyEntriesEvent;
 use ModifyQueryEvent;
@@ -300,5 +301,15 @@ class PackageService extends Component
         return $settings['*'];
     }
 
+    public function getPackageIdFromRequest()
+    {
+        $queryParams = Json::decodeIfJson(Craft::$app->request->getBodyParam('queryParams'));
+
+        if (isset($queryParams['elementId'])) {
+            return  $queryParams['elementId'];
+        }
+
+        return Craft::$app->request->getRequiredParam('elementId');
+    }
 
 }
