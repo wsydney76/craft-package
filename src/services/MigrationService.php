@@ -33,6 +33,7 @@ class MigrationService extends Component
             ]);
 
             if (!Craft::$app->fields->saveGroup($fieldGroup)) {
+                Craft::error('Could not install fieldGroup', 'package/install');
                 return false;
             }
         }
@@ -47,7 +48,7 @@ class MigrationService extends Component
             ]);
 
             if (!Craft::$app->fields->saveField($maintainPackageField)) {
-                Craft::error('Could not create mainPackageField', 'Package');
+                Craft::error('Could not create mainPackageField', 'package/install');
                 return false;
             }
         }
@@ -71,7 +72,7 @@ class MigrationService extends Component
             );
 
             if (!Craft::$app->sections->saveSection($section)) {
-                Craft::error('Could not create package section', 'Package');
+                Craft::error('Could not create package section', 'package/install');
                 return false;
             }
 
@@ -86,7 +87,7 @@ class MigrationService extends Component
 
 
             if (!Craft::$app->fields->saveLayout($layout))
-                Craft::error('Could not save fieldlayout', 'Package');;
+                Craft::error('Could not save fieldlayout', 'package/install');;
         }
 
         // Create package field
@@ -103,7 +104,7 @@ class MigrationService extends Component
             ]);
 
             if (!Craft::$app->fields->saveField($packageField)) {
-                Craft::error('Could not save packageField', 'Package');
+                Craft::error('Could not save packageField', 'package/install');
                 return false;
             }
         }
@@ -117,7 +118,7 @@ class MigrationService extends Component
                 copy($source, $dest);
             }
         } catch (Exception $e) {
-            Craft::error('Could not copy plugin config package.php: ' . $e->getMessage(), 'Package');
+            Craft::error('Could not copy plugin config package.php: ' . $e->getMessage(), 'package/install');
         }
 
         // Create package.php page config file
@@ -133,7 +134,7 @@ class MigrationService extends Component
                 copy($source, $dest);
             }
         } catch (Exception $e) {
-            Craft::error('Could not copy page config package.php: ' . $e->getMessage(), 'Package');
+            Craft::error('Could not copy page config package.php: ' . $e->getMessage(), 'package/install');
         }
 
         return true;

@@ -35,7 +35,9 @@ class PackageController extends Controller
             try {
                 $backupPath = Craft::$app->getDb()->backup();
             } catch (Throwable $e) {
-                return $this->asFailure('Could not create backup: ' . $e->getMessage());
+                $msg = 'Could not create backup: ' . $e->getMessage();
+                Craft::error($msg, 'package/backup');
+                return $this->asFailure($msg);
             }
             $messages[] = "Backup created in $backupPath";
         }
@@ -110,6 +112,7 @@ class PackageController extends Controller
 
         [$success, $message] = Plugin::getInstance()->packageService->createEntry($packageId, $options);
         if (!$success) {
+            Craft::error($message, 'package/createEntry');
             return $this->asFailure($message);
         }
 

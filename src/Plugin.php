@@ -15,6 +15,7 @@ use wsydney76\contentoverview\events\RegisterActionsEvent;
 use wsydney76\contentoverview\services\ContentOverviewService;
 use wsydney76\package\behaviors\EntryBehavior;
 use wsydney76\package\fields\MaintainPackage;
+use wsydney76\package\helpers\FileLog;
 use wsydney76\package\models\ReleaseAction;
 use wsydney76\package\models\Settings;
 use wsydney76\package\services\MigrationService;
@@ -54,7 +55,7 @@ class Plugin extends BasePlugin
         // Defer most setup tasks until Craft is fully initialized
         Craft::$app->onInit(function() {
             $this->attachEventHandlers();
-            // ...
+            FileLog::create('package', 'package/*');
         });
     }
 
@@ -95,6 +96,7 @@ class Plugin extends BasePlugin
                 $event->actions['release'] = ReleaseAction::class;
             }
         );
+
 
     }
 }
