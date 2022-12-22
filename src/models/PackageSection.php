@@ -92,9 +92,6 @@ class PackageSection extends TableSection
         }
 
         Craft::$app->view->registerAssetBundle('wsydney76\\package\\assets\\PackageAssetBundle');
-        if (Craft::$app->plugins->isPluginEnabled('work')) {
-            Craft::$app->view->registerAssetBundle('wsydney76\\contentoverview\\assets\\WorkPluginAssetBundle');
-        }
     }
 
 

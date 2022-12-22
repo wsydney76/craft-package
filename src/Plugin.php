@@ -11,8 +11,11 @@ use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\services\Fields;
 use craft\web\View;
+use wsydney76\contentoverview\events\RegisterActionsEvent;
+use wsydney76\contentoverview\services\ContentOverviewService;
 use wsydney76\package\behaviors\EntryBehavior;
 use wsydney76\package\fields\MaintainPackage;
+use wsydney76\package\models\ReleaseAction;
 use wsydney76\package\models\Settings;
 use wsydney76\package\services\MigrationService;
 use wsydney76\package\services\PackageService;
@@ -84,5 +87,14 @@ class Plugin extends BasePlugin
             function(RegisterComponentTypesEvent $event) {
                 $event->types[] = MaintainPackage::class;
             });
+
+        Event::on(
+            ContentOverviewService::class,
+            ContentOverviewService::EVENT_REGISTER_ACTIONS,
+            function(RegisterActionsEvent $event) {
+                $event->actions['release'] = ReleaseAction::class;
+            }
+        );
+
     }
 }

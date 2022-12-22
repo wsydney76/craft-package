@@ -126,4 +126,25 @@ class PackageController extends Controller
         );
     }
 
+    public function actionReleaseEntry()
+    {
+        $id = Craft::$app->request->getRequiredBodyParam('elementId');
+        $entry = Craft::$app->entries->getEntryById($id);
+        if (!$entry) {
+            return $this->asFailure("Entry with id $id not found");
+        }
+
+        $currentUser = Craft::$app->user->identity;
+        if (!$currentUser->can("saveentries:{$entry->section->uid}")) {
+            return $this->asFailure("Invalid permission");
+        }
+
+        [$success, $message] = Plugin::getInstance()->packageService->releaseEntry($entry, null, ['enableEntries' => true]);
+
+        if (!$success) {
+            return $this->asFailure($message);
+        }
+        return $this->asSuccess("Released $entry->title.");
+    }
+
 }

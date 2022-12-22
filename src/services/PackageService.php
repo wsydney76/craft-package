@@ -70,7 +70,7 @@ class PackageService extends Component
         return true;
     }
 
-    public function releaseEntry(Entry $entry, int $packageId, array $options = []): array
+    public function releaseEntry(Entry $entry, ?int $packageId = null, array $options = []): array
     {
         $currentUser = Craft::$app->user->identity;
         if (!$currentUser->can("saveentries:$entry->section->uid")) {
@@ -104,7 +104,7 @@ class PackageService extends Component
             }
         }
 
-        if ((bool)$options['removeFromPackage']) {
+        if ($packageId && (bool)$options['removeFromPackage']) {
             $this->removeFromPackage($entry->canonicalId, $packageId);
         }
 
