@@ -9,8 +9,11 @@ use craft\elements\Entry;
 use craft\events\DefineBehaviorsEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterTemplateRootsEvent;
+use craft\events\RegisterUrlRulesEvent;
 use craft\services\Fields;
+use craft\web\UrlManager;
 use craft\web\View;
+use wsydney76\contentoverview\events\GetSectionByPathEvent;
 use wsydney76\contentoverview\events\RegisterActionsEvent;
 use wsydney76\contentoverview\services\ContentOverviewService;
 use wsydney76\package\behaviors\EntryBehavior;
@@ -50,7 +53,6 @@ class Plugin extends BasePlugin
     public function init()
     {
         parent::init();
-
 
         // Defer most setup tasks until Craft is fully initialized
         Craft::$app->onInit(function() {
@@ -97,6 +99,23 @@ class Plugin extends BasePlugin
             }
         );
 
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES, function(RegisterUrlRulesEvent $event) {
+            $event->rules = array_merge($event->rules, [
+                'package' => 'package/page',
+            ]);
+        });
+
+        Event::on(
+            ContentOverviewService::class,
+            ContentOverviewService::EVENT_GETSECTIONBYPATH,
+            function(GetSectionByPathEvent $event) {
+                if ($event->sectionPath === $this->getSettings()->sectionPath) {
+                    $event->section = $this->packageService->getSectionModelFromRequest();
+                }
+            }
+        );
 
     }
 }

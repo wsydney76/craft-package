@@ -21,7 +21,7 @@ class PackagesSection extends Section
             Plugin::getInstance()->contentoverview->createAction()
                 ->label(Craft::t('package', 'Maintain package'))
                 ->icon('@wsydney76/package/icons/publish.svg')
-                ->cpUrl('contentoverview/package')
+                ->cpUrl('package')
                 ->cpUrlTarget('')
         ];
     }

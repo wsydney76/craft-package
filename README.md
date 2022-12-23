@@ -14,14 +14,13 @@ Run `composer require wsydney76/craft-package` (coming soon...)
 
 Run `craft plugin/install package` or install from settings/plugin page in the Control Panel.
 
-This will 
+This will (if not already present)
 
 * create a section `Package` (handle `paPackage`).
 * create a field group `Package`.
 * create a field `Package` (handle `paPackage`).
 * create a field `Maintain Package` (handle `paMaintainPackage`)  and assigns it to the `Package` section.
 * create a `config/package.php` plugin setting file.
-* create a `config/contentoverview/package.php` page config file. 
 
 Check logs if the installation fails.
 
@@ -132,20 +131,14 @@ As always you can modify the plugins behavior by providing your own Section clas
 e.g.
 
 ```php
-// config/contentoverview/package.php
+// config/package.php
 
-<?php
+'defaultSectionClass' => MyPackageSection::class,
 
-use modules\contentoverview\models\MyPackageSection;
-use wsydney76\contentoverview\Plugin;
-
-$co = Plugin::getInstance()->contentoverview;
-
-return [
-    'sections' => [
-        $co->createSection(MyPackageSection::class)
-    ]
-];
+// for specific package section
+'sectionClasses' => [
+    'film' => FilmPackageSection::class
+],
 
 // modules/contentoverview/models
 
@@ -177,6 +170,18 @@ class MyPackageSection extends PackageSection
         return $columns;
     }
 }
+
+// FilmPackageSection
+...
+public function getFormTemplates(): Collection
+{
+    return parent::getFormTemplates()
+        // remove generic 'create new' form
+        ->filter(fn($template) => $template !== '/package/forms/attach-new.twig')
+        // add bespoke 'create new' form template
+        ->push('_contentoverview/custom/create_screening_package.twig');
+}
+...
 ```
 
 ## Release Actions

@@ -121,22 +121,6 @@ class MigrationService extends Component
             Craft::error('Could not copy plugin config package.php: ' . $e->getMessage(), 'package/install');
         }
 
-        // Create package.php page config file
-        try {
-            $dir = App::parseEnv(Plugin::getInstance()->getSettings()->configPath);
-            $dest = $dir . DIRECTORY_SEPARATOR . 'package.php';
-            if (!is_file($dest)) {
-                if (!is_dir($dir)) {
-                    FileHelper::createDirectory($dir);
-                }
-
-                $source = App::parseEnv('@wsydney76/package/scaffold/package.txt');
-                copy($source, $dest);
-            }
-        } catch (Exception $e) {
-            Craft::error('Could not copy page config package.php: ' . $e->getMessage(), 'package/install');
-        }
-
         return true;
     }
 

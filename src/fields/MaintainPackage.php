@@ -57,7 +57,7 @@ class MaintainPackage extends Field implements PreviewableFieldInterface
         return Html::tag('a',
             Craft::t('package', 'Maintain package'),
             [
-                'href' => UrlHelper::cpUrl('contentoverview/package', ['elementId' => $element->id]),
+                'href' => UrlHelper::cpUrl('package', ['elementId' => $element->id]),
                 'target' => '_blank',
                 'class' => 'go'
             ]);

@@ -6,7 +6,6 @@ use Craft;
 use craft\web\Controller;
 use Throwable;
 use wsydney76\package\Plugin;
-use yii\base\Exception;
 use function implode;
 
 class PackageController extends Controller

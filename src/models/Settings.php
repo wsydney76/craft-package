@@ -17,4 +17,7 @@ class Settings extends Model
         '/package/forms/attach-drafts.twig',
         '/package/forms/attach-new.twig'
     ];
+    public string $defaultSectionClass = PackageSection::class;
+    public array $sectionClasses = [];
+    public string $sectionPath = 'package-0-0-0';
 }

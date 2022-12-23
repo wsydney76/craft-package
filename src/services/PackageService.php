@@ -312,4 +312,24 @@ class PackageService extends Component
         return Craft::$app->request->getRequiredParam('elementId');
     }
 
+    public function getSectionClassFromRequest()
+    {
+        $settings = Plugin::getInstance()->getSettings();
+
+        $packageId = Plugin::getInstance()->packageService->getPackageIdFromRequest();
+
+        $entry = Craft::$app->entries->getEntryById($packageId);
+        if (!$entry) {
+            throw new NotFoundHttpException();
+        }
+
+        return $settings->sectionClasses[$entry->section->handle] ?? $settings->defaultSectionClass;
+
+    }
+
+    public function getSectionModelFromRequest()
+    {
+        return \wsydney76\contentoverview\Plugin::getInstance()->contentoverview->createSection($this->getSectionClassFromRequest());
+    }
+
 }
